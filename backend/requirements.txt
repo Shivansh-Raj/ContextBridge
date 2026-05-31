@@ -1,0 +1,9 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+groq>=0.13.0
+anthropic==0.34.2
+tiktoken==0.7.0
+beautifulsoup4==4.12.3
+python-multipart==0.0.9
+pydantic==2.8.2
+python-dotenv==1.0.1
