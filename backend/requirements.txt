@@ -7,3 +7,4 @@ beautifulsoup4==4.12.3
 python-multipart==0.0.9
 pydantic==2.8.2
 python-dotenv==1.0.1
+langgraph>=0.2.0

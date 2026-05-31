@@ -17,7 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from parsers import parse_conversation
-from pipeline import run_pipeline
+from graph import run_graph
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -42,10 +42,12 @@ class ProcessRequest(BaseModel):
 
 class ProcessResponse(BaseModel):
     output: str
+    output_files: dict = {}
     token_count: int
     mode: str
     stages_used: list[str]
     processing_time_ms: int
+    chunks_processed: int = 0
 
 
 @app.post("/api/process", response_model=ProcessResponse)
@@ -61,7 +63,7 @@ async def process_conversation(req: ProcessRequest):
         raise HTTPException(status_code=400, detail="Could not parse any messages from input")
 
     try:
-        result = await run_pipeline(messages, req.mode, req.token_target)
+        result = await run_graph(messages, req.mode, req.token_target)
     except Exception as exc:
         logger.exception("Pipeline failed")
         raise HTTPException(status_code=500, detail=str(exc)) from exc
@@ -70,10 +72,12 @@ async def process_conversation(req: ProcessRequest):
 
     return ProcessResponse(
         output=result["output"],
+        output_files=result.get("output_files", {}),
         token_count=result["token_count"],
         mode=req.mode,
         stages_used=result["stages_used"],
         processing_time_ms=elapsed_ms,
+        chunks_processed=result.get("chunks_processed", 0),
     )
 
 
