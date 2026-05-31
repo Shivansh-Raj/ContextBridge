@@ -40,6 +40,7 @@ class ProcessRequest(BaseModel):
     file_content: Optional[str] = None
     file_type: Optional[str] = "txt"
     mode: str = "detailed"
+    chunk_level: str = "medium"
     token_target: Optional[int] = None
 
 
@@ -68,7 +69,7 @@ async def process_conversation(req: ProcessRequest):
         raise HTTPException(status_code=400, detail="Could not parse any messages from input")
 
     try:
-        result = await run_graph(messages, req.mode, req.token_target)
+        result = await run_graph(messages, req.mode, req.token_target, req.chunk_level)
     except Exception as exc:
         logger.exception("Pipeline failed")
         raise HTTPException(status_code=500, detail=str(exc)) from exc

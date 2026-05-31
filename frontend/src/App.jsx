@@ -258,6 +258,7 @@ export default function App() {
   const [text, setText]               = useState('')
   const [uploadedFile, setUploadedFile] = useState(null)
   const [mode, setMode]               = useState('detailed')
+  const [chunkLevel, setChunkLevel]   = useState('medium')
   const [status, setStatus]           = useState('idle')
   const [currentStage, setCurrentStage] = useState(0)
   const [result, setResult]           = useState(null)
@@ -277,6 +278,7 @@ export default function App() {
       const body = {
         conversation_text: text,
         mode,
+        chunk_level: chunkLevel,
         token_target: null,
       }
       if (uploadedFile) {
@@ -405,6 +407,59 @@ export default function App() {
                 {mode === 'detailed'
                   ? 'Captures actual code blocks shown in the conversation alongside semantic descriptions'
                   : 'Faster — produces intent, code semantics, and structure documents only'}
+              </p>
+            </div>
+
+            {/* Chunk level selector */}
+            <div className="space-y-2">
+              <label className="text-xs text-gray-500 uppercase tracking-widest">
+                Chunking level
+              </label>
+              <div className="flex gap-2">
+                {[
+                  {
+                    value: 'low',
+                    label: 'Low',
+                    badge: 'Fast',
+                    desc: 'Fewer, larger chunks — quick processing, less granular',
+                    badgeColor: 'text-emerald-400',
+                  },
+                  {
+                    value: 'medium',
+                    label: 'Medium',
+                    badge: 'Balanced',
+                    desc: 'Default — good balance of speed and detail',
+                    badgeColor: 'text-blue-400',
+                  },
+                  {
+                    value: 'high',
+                    label: 'High',
+                    badge: 'Thorough',
+                    desc: 'Many small chunks — most detail, slowest',
+                    badgeColor: 'text-amber-400',
+                  },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setChunkLevel(opt.value)}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm border transition-all text-left ${
+                      chunkLevel === opt.value
+                        ? 'border-gray-500 bg-gray-800 text-white'
+                        : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-600'
+                    }`}
+                  >
+                    <span className="font-medium block">{opt.label}</span>
+                    <span className={`text-xs ${opt.badgeColor}`}>{opt.badge}</span>
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-600">
+                {
+                  { low:    'Fewer, larger chunks — quick processing, best for short conversations',
+                    medium: 'Balanced — recommended for most conversations',
+                    high:   'Many small chunks — most thorough, significantly slower on long conversations',
+                  }[chunkLevel]
+                }
               </p>
             </div>
 
