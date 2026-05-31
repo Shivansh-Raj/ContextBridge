@@ -5,7 +5,10 @@ from typing import Optional
 
 from dotenv import load_dotenv
 
-# Search: backend/.env → project-root/.env → project-root/.env.example
+# Run Command
+# uvicorn main:app --reload
+
+
 _here = Path(__file__).parent
 for _p in [_here / ".env", _here.parent / ".env", _here.parent / ".env.example"]:
     if _p.exists():
@@ -54,11 +57,13 @@ class ProcessResponse(BaseModel):
 async def process_conversation(req: ProcessRequest):
     start = time.time()
 
-    raw_text = req.file_content if req.file_content else req.conversation_text
-    if not raw_text or not raw_text.strip():
-        raise HTTPException(status_code=400, detail="No conversation text provided")
+    # Collect messages from both sources and combine them
+    messages = []
+    if req.file_content and req.file_content.strip():
+        messages.extend(parse_conversation(req.file_content, req.file_type or "txt"))
+    if req.conversation_text and req.conversation_text.strip():
+        messages.extend(parse_conversation(req.conversation_text, "txt"))
 
-    messages = parse_conversation(raw_text, req.file_type or "txt")
     if not messages:
         raise HTTPException(status_code=400, detail="Could not parse any messages from input")
 
