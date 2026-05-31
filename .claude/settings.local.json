@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell(Get-ChildItem \"d:\\\\Documents\\\\College_DTU\\\\chat_cont\" -Recurse | Where-Object { -not $_.PSIsContainer } | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"d:\\\\Documents\\\\College_DTU\\\\chat_cont\\\\\", \"\"\\) })"
-    ]
-  }
-}
